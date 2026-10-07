@@ -1,12 +1,30 @@
-name: Ubuntu SSH Terminal (No Card Required)
+name: Ubuntu Linux VPS (6 Hours)
 
 on:
   workflow_dispatch:
 
 jobs:
-  ssh-session:
+  run-vps:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
+
     steps:
-      - name: Start SSH Session via Tmate
-        uses: mxschmitt/action-tmate@v3
-        
+      - name: Start Tmate SSH Session
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y tmate
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          
+          SSH_CMD=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
+          WEB_CMD=$(tmate -S /tmp/tmate.sock display -p '#{tmate_web}')
+          
+          echo "=================================================="
+          echo "           UBUNTU LINUX VPS IS READY              "
+          echo "=================================================="
+          echo "SSH Command : $SSH_CMD"
+          echo "Web Terminal: $WEB_CMD"
+          echo "=================================================="
+          
+          while true; do
+            sleep 60
+          done
